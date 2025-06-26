@@ -1,28 +1,41 @@
-version: '3.8'
 services:
   db:
-    image: mysql:8
-    restart: always
+    image: mysql:8.0
+    container_name: vass-mysql-db
     environment:
-      MYSQL_DATABASE: app_db
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
 
   backend:
     build: ./backend
-    ports:
-      - "8080:8080"
+    container_name: vaas-backend-app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/app_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    ports:
+      - '8080:8080'
     depends_on:
       - db
 
   frontend:
     build: ./frontend
+    container_name: vass-frontend-app
     ports:
-      - "3000:3000"
+      - '3000:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     depends_on:
       - backend
+
+volumes:
+  mysql_data:
