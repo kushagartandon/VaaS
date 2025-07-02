@@ -18,14 +18,13 @@ public class User {
     private String name;
     private String phone;
 
-    // Optional but used for verification
     private String aadhaarLast4;
     private String pan;
 
-    private String workType;     // e.g., Driver, Beautician, Plumber
-    private String platformId;   // e.g., Uber ID, Urban Company ID
+    private String workType;     // e.g. Driver, Beautician, Plumber
+    private String platformId;   // e.g. Uber ID, Urban Company ID
 
-    private String did;          // Decentralized Identity
+    private String did;          // Unique Identifier for VaaS
     private String qrCodePath;   // Optional: path to generated QR image
 }
 
