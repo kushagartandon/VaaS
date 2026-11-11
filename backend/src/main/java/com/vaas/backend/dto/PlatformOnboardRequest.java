@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PlatformOnboardRequest {
 
-    @NotBlank(message = "Platform name is required (e.g. Uber, Ola)")
+    // Optional in JSON body; automatically resolved from authenticated API Key
     private String platformName;
 
     @NotBlank(message = "Platform worker ID is required (e.g. UBER-1029)")

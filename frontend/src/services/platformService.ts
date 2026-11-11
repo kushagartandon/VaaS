@@ -69,12 +69,26 @@ export interface WorkerPassport {
   reviews: ReviewSummary[];
 }
 
+export const DEFAULT_PLATFORM_API_KEYS: Record<string, string> = {
+  Uber: "vaas_live_uber_883910",
+  Ola: "vaas_live_ola_441029",
+  "Urban Company": "vaas_live_uc_772190",
+  Zomato: "vaas_live_zomato_552104",
+  Swiggy: "vaas_live_swiggy_661082",
+};
+
 export async function onboardWorker(
-  data: PlatformOnboardRequest
+  data: PlatformOnboardRequest,
+  apiKey?: string
 ): Promise<PlatformOnboardResponse> {
+  const key = apiKey || DEFAULT_PLATFORM_API_KEYS[data.platformName] || "vaas_live_uber_883910";
+
   const res = await fetch(`${BASE_URL}/api/platform/onboard`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": key,
+    },
     body: JSON.stringify(data),
   });
 
@@ -87,11 +101,17 @@ export async function onboardWorker(
 }
 
 export async function submitReview(
-  data: AddReviewRequest
+  data: AddReviewRequest,
+  apiKey?: string
 ): Promise<ReviewSummary> {
+  const key = apiKey || DEFAULT_PLATFORM_API_KEYS[data.platformName] || "vaas_live_uber_883910";
+
   const res = await fetch(`${BASE_URL}/api/platform/review`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": key,
+    },
     body: JSON.stringify(data),
   });
 
@@ -104,10 +124,16 @@ export async function submitReview(
 }
 
 export async function getWorkerPassportByDid(
-  did: string
+  did: string,
+  apiKey?: string
 ): Promise<WorkerPassport> {
+  const key = apiKey || "vaas_live_uber_883910";
+
   const res = await fetch(
-    `${BASE_URL}/api/platform/worker/${encodeURIComponent(did)}`
+    `${BASE_URL}/api/platform/worker/${encodeURIComponent(did)}`,
+    {
+      headers: { "X-API-Key": key },
+    }
   );
 
   if (!res.ok) {
@@ -119,10 +145,16 @@ export async function getWorkerPassportByDid(
 }
 
 export async function getWorkerPassportByPhone(
-  phone: string
+  phone: string,
+  apiKey?: string
 ): Promise<WorkerPassport> {
+  const key = apiKey || "vaas_live_uber_883910";
+
   const res = await fetch(
-    `${BASE_URL}/api/platform/worker/phone/${encodeURIComponent(phone)}`
+    `${BASE_URL}/api/platform/worker/phone/${encodeURIComponent(phone)}`,
+    {
+      headers: { "X-API-Key": key },
+    }
   );
 
   if (!res.ok) {

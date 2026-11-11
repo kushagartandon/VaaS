@@ -56,9 +56,9 @@ export default function WorkerPassportPage({ params }: { params: Promise<{ did: 
       {/* Header */}
       <header className="border-b border-slate-800/80 backdrop-blur-md sticky top-0 z-50 bg-slate-950/80">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/platform" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors">
+          <Link href="/developer/sandbox" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to Platform Gateway</span>
+            <span>Back to Developer Sandbox</span>
           </Link>
 
           <div className="flex items-center gap-2 font-bold text-sm text-teal-400">
@@ -82,10 +82,10 @@ export default function WorkerPassportPage({ params }: { params: Promise<{ did: 
             <h3 className="text-base font-bold text-white mb-1">Passport Not Found</h3>
             <p className="text-xs text-red-300 mb-4">{error}</p>
             <Link
-              href="/platform"
+              href="/developer/sandbox"
               className="inline-block px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white rounded-xl"
             >
-              Return to Platform Search
+              Return to Developer Sandbox
             </Link>
           </div>
         )}

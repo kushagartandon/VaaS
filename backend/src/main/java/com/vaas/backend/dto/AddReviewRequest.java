@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AddReviewRequest {
 
-    @NotBlank(message = "Platform name is required")
+    // Optional in JSON body; automatically resolved from authenticated API Key
     private String platformName;
 
     private String did;
