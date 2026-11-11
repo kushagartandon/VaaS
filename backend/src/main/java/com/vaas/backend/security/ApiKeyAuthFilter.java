@@ -38,6 +38,10 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
+        // Allow Swagger / OpenAPI documentation endpoints
+        if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs")) {
+            return true;
+        }
         // Only enforce API key authentication on /api/platform/** routes
         if (!path.startsWith("/api/platform")) {
             return true;
