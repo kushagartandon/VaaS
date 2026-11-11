@@ -35,6 +35,7 @@ import {
   Terminal,
   Code2,
   SlidersHorizontal,
+  BookOpen,
 } from "lucide-react";
 
 type PlatformType = "Uber" | "Ola" | "Urban Company" | "Zomato";
@@ -221,6 +222,16 @@ export default function DeveloperSandboxPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <a
+              href="http://localhost:8080/swagger-ui/index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/30 hover:bg-teal-500/20 font-medium transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Swagger API Docs</span>
+              <ExternalLink className="w-3 h-3 ml-0.5" />
+            </a>
             <span className="text-[11px] px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
               SANDBOX MODE
             </span>

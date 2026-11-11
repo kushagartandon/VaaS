@@ -13,6 +13,8 @@ import {
   Share2,
   Star,
   Layers,
+  BookOpen,
+  ExternalLink,
 } from "lucide-react";
 
 export default function Home() {
@@ -32,6 +34,16 @@ export default function Home() {
           </div>
 
           <nav className="flex items-center gap-3">
+            <a
+              href="http://localhost:8080/swagger-ui/index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-teal-400" />
+              <span>API Docs</span>
+              <ExternalLink className="w-3 h-3 text-slate-500" />
+            </a>
             <Link
               href="/developer/sandbox"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-teal-400 hover:border-slate-700 transition-colors"
