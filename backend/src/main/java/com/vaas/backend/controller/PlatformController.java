@@ -1,19 +1,22 @@
 package com.vaas.backend.controller;
 
-import com.vaas.backend.dto.AddReviewRequest;
-import com.vaas.backend.dto.PlatformOnboardRequest;
-import com.vaas.backend.dto.PlatformOnboardResponse;
-import com.vaas.backend.dto.ReviewSummaryDTO;
-import com.vaas.backend.dto.WorkerPassportDTO;
+import com.vaas.backend.dto.*;
+import com.vaas.backend.model.PartnerPlatform;
 import com.vaas.backend.model.User;
+import com.vaas.backend.repository.PartnerPlatformRepository;
 import com.vaas.backend.repository.UserRepository;
+import com.vaas.backend.security.ApiKeyAuthFilter;
 import com.vaas.backend.service.ReputationService;
 import com.vaas.backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/platform")
@@ -22,43 +25,82 @@ public class PlatformController {
     private final UserService userService;
     private final ReputationService reputationService;
     private final UserRepository userRepository;
+    private final PartnerPlatformRepository partnerPlatformRepository;
 
     public PlatformController(
             UserService userService,
             ReputationService reputationService,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            PartnerPlatformRepository partnerPlatformRepository) {
         this.userService = userService;
         this.reputationService = reputationService;
         this.userRepository = userRepository;
+        this.partnerPlatformRepository = partnerPlatformRepository;
+    }
+
+    /**
+     * Public Developer / Sandbox endpoint:
+     * Returns the pre-seeded platform API keys for testing in the sandbox portal.
+     */
+    @GetMapping("/keys")
+    public ResponseEntity<List<PlatformKeyInfoDTO>> getAvailableKeys() {
+        List<PlatformKeyInfoDTO> keys = partnerPlatformRepository.findAll().stream()
+                .map(p -> PlatformKeyInfoDTO.builder()
+                        .name(p.getName())
+                        .apiKey(p.getApiKey())
+                        .environment(p.getEnvironment())
+                        .active(p.isActive())
+                        .lastUsedAt(p.getLastUsedAt())
+                        .build())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(keys);
     }
 
     /**
      * B2B Platform Onboarding:
-     * Used by Uber, Ola, Urban Company, Zomato, etc. to onboard or query an incoming gig worker.
+     * Requires valid X-API-Key or Bearer token header.
+     * Platform name is strictly bound to the authenticated API key.
      */
     @PostMapping("/onboard")
     public ResponseEntity<PlatformOnboardResponse> onboardWorker(
-            @Valid @RequestBody PlatformOnboardRequest request) {
-        PlatformOnboardResponse response = userService.onboardWorkerFromPlatform(request);
+            @Valid @RequestBody PlatformOnboardRequest requestDto,
+            HttpServletRequest request) {
+
+        PartnerPlatform platform = (PartnerPlatform) request.getAttribute(ApiKeyAuthFilter.AUTHENTICATED_PLATFORM_ATTR);
+        if (platform != null) {
+            // Guarantee platform identity from authenticated API key
+            requestDto.setPlatformName(platform.getName());
+        }
+
+        PlatformOnboardResponse response = userService.onboardWorkerFromPlatform(requestDto);
         HttpStatus status = response.isNewWorker() ? HttpStatus.CREATED : HttpStatus.OK;
         return ResponseEntity.status(status).body(response);
     }
 
     /**
-     * Post a review or safety incident report for a worker from a specific platform.
+     * Post a review or safety incident report for a worker from the authenticated platform.
+     * Requires valid X-API-Key or Bearer token header.
      */
     @PostMapping("/review")
     public ResponseEntity<ReviewSummaryDTO> submitReview(
-            @Valid @RequestBody AddReviewRequest request) {
+            @Valid @RequestBody AddReviewRequest requestDto,
+            HttpServletRequest request) {
+
+        PartnerPlatform platform = (PartnerPlatform) request.getAttribute(ApiKeyAuthFilter.AUTHENTICATED_PLATFORM_ATTR);
+        if (platform != null) {
+            // Strictly bind review authorship to authenticated platform
+            requestDto.setPlatformName(platform.getName());
+        }
+
         User user = null;
 
-        if (request.getDid() != null && !request.getDid().isBlank()) {
-            user = userRepository.findByDid(request.getDid().trim())
+        if (requestDto.getDid() != null && !requestDto.getDid().isBlank()) {
+            user = userRepository.findByDid(requestDto.getDid().trim())
                     .orElse(null);
         }
 
-        if (user == null && request.getPhone() != null && !request.getPhone().isBlank()) {
-            user = userRepository.findByPhone(request.getPhone().trim())
+        if (user == null && requestDto.getPhone() != null && !requestDto.getPhone().isBlank()) {
+            user = userRepository.findByPhone(requestDto.getPhone().trim())
                     .orElse(null);
         }
 
@@ -69,7 +111,7 @@ public class PlatformController {
             );
         }
 
-        ReviewSummaryDTO reviewSummary = reputationService.addReview(request, user);
+        ReviewSummaryDTO reviewSummary = reputationService.addReview(requestDto, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(reviewSummary);
     }
 

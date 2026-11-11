@@ -33,11 +33,11 @@ export default function Home() {
 
           <nav className="flex items-center gap-3">
             <Link
-              href="/platform"
+              href="/developer/sandbox"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-slate-900 border border-slate-800 text-teal-400 hover:border-slate-700 transition-colors"
             >
               <Building2 className="w-3.5 h-3.5" />
-              <span>Partner Gateway (B2B)</span>
+              <span>Developer Sandbox</span>
             </Link>
             <Link
               href="/register"
@@ -74,11 +74,11 @@ export default function Home() {
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
-                href="/platform"
+                href="/developer/sandbox"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-semibold bg-teal-500 hover:bg-teal-400 text-slate-950 text-sm transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30"
               >
                 <Building2 className="w-4 h-4" />
-                <span>Simulate Partner Onboarding (Uber/Ola)</span>
+                <span>Launch Developer Sandbox (Uber/Ola)</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
 
